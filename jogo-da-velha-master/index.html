@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./src/assets/css/styles.css">
+    <title>Jogo da Velha</title>
+</head>
+<body>
+<div class="div_jogadores">
+    <legend style="color: white; font-weight: bolder;">JOGADORES</legend>
+    <label for="jog1">Jogador 1:</label>
+    <input type="text" id="jog1" name="jogador1"><br><br>
+    <label for="jog2" id="labelJogador2">Jogador 2:</label>
+    <input type="text" id="jog2" name="jogador2"><br><br>
+    <p class="checkbox">
+        Jogar contra a máquina <input type="checkbox" id="checkboxRobo">
+    </p>
+</div>
+
+<div id="root" class="wood-gradient"></div>
+
+<div class="div_table">
+    <fieldset>
+        <legend style="color: white; font-weight: bolder;">Tabela de Rankings</legend>
+        <table id="tableGameWinners" style="width: 100%;"></table>
+    </fieldset>
+
+    <!-- Botão para zerar o Local Storage -->
+    <button id="btnZerarLocalStorage">Zerar Local Storage</button>
+</div>
+
+<script>
+    // Função para atualizar o estado do campo de jogador 2 e label com base no estado do checkbox
+    function atualizarCampoJogador2() {
+        const jogador2Nome = document.getElementById('jog2');
+        const labelJogador2 = document.getElementById('labelJogador2');
+        const checkboxRobo = document.getElementById('checkboxRobo');
+
+        if (checkboxRobo.checked) {
+            jogador2Nome.disabled = true; // Desabilita o input quando jogando contra a máquina
+            jogador2Nome.value = ''; // Limpa o valor do input
+            labelJogador2.style.display = 'none'; // Oculta a label "Jogador 2:"
+        } else {
+            jogador2Nome.disabled = false; // Habilita o input quando jogando com outro jogador
+            labelJogador2.style.display = 'inline'; // Exibe a label "Jogador 2:"
+        }
+    }
+
+    // Função para zerar o Local Storage
+    function zerarLocalStorage() {
+        localStorage.clear
+        // Após remover, podemos recriar a tabela vazia
+        criaTable();
+    }
+
+    // Executa a função inicialmente para configurar o estado correto do campo de jogador 2 ao carregar a página
+    document.addEventListener('DOMContentLoaded', function () {
+        atualizarCampoJogador2(); // Verifica o estado inicial do checkbox
+        const checkboxRobo = document.getElementById('checkboxRobo');
+        
+        // Adiciona um evento de mudança ao checkbox para atualizar dinamicamente o estado do campo de jogador 2
+        checkboxRobo.addEventListener('change', atualizarCampoJogador2);
+
+        // Evento para o botão de zerar Local Storage
+        const btnZerarLocalStorage = document.getElementById('btnZerarLocalStorage');
+        btnZerarLocalStorage.addEventListener('click', zerarLocalStorage);
+    });
+</script>
+
+<script src="https://lemonadejs.net/v1/lemonade.js"></script>
+<script src="./src/assets/js/tictactoe.js"></script>
+<script>
+    lemonade.render(JogoVelha, document.getElementById('root'));
+</script>
+
+</body>
+</html>
