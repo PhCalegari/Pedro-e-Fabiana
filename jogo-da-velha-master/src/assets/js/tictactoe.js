@@ -30,42 +30,52 @@ class InforPlay {
     }
 }
 
-class WinningPlayer {
-    constructor(id, nome, total) {
-        this.id = id;
+class RankingPlayer {
+    constructor(nome) {
         this.nome = nome;
-        this.total = total;
+        this.vitorias = 0;
+        this.empates = 0;
+        this.derrotas = 0;
     }
 }
 
 window.onload = function () {
     criaTable();
 };
-
 function criaTable() {
     const parent = document.getElementById("tableGameWinners");
     while (parent.firstChild) {
-        parent.firstChild.remove()
+        parent.firstChild.remove();
     }
 
     var row = document.createElement("tr");
     row.style = 'background-color: #0F2028;';
 
-    var thRA = document.createElement("th");
-    thRA.innerHTML = 'Nome';
-    thRA.style = 'width: 200px; text-align: center; color: #FFFFFF;';
-    row.append(thRA);
+    var thNome = document.createElement("th");
+    thNome.innerHTML = 'Nome';
+    thNome.style = 'width: 200px; text-align: center; color: #FFFFFF;';
+    row.append(thNome);
 
-    var thStatus = document.createElement("th");
-    thStatus.innerHTML = 'Total';
-    thStatus.style = 'width: 100px; text-align: center; color: #FFFFFF;';
-    row.append(thStatus);
+    var thVitorias = document.createElement("th");
+    thVitorias.innerHTML = 'Vitórias';
+    thVitorias.style = 'width: 100px; text-align: center; color: #FFFFFF;';
+    row.append(thVitorias);
+
+    var thEmpates = document.createElement("th");
+    thEmpates.innerHTML = 'Empates';
+    thEmpates.style = 'width: 100px; text-align: center; color: #FFFFFF;';
+    row.append(thEmpates);
+
+    var thDerrotas = document.createElement("th");
+    thDerrotas.innerHTML = 'Derrotas';
+    thDerrotas.style = 'width: 100px; text-align: center; color: #FFFFFF;';
+    row.append(thDerrotas);
 
     const tableNotaSemestre = document.getElementById("tableGameWinners");
-    tableNotaSemestre.insertBefore(row, tableNotaSemestre.childNodes[0]);// Adiciona a linha na posição zero(0) tabela
+    tableNotaSemestre.insertBefore(row, tableNotaSemestre.childNodes[0]);
+
     const notasLocalStorage = JSON.parse(localStorage.getItem('gameWinnersList'));
 
-    notasLocalStorage.sort((a, b) => parseFloat(b.total) - parseFloat(a.total));
     notasLocalStorage.forEach(item => {
         criarElemento(item);
     });
@@ -74,40 +84,52 @@ function criaTable() {
     for (var i = 0; i < linhasTabela.length; i++) {
         if (i == 0) {
             continue;
-        }
-        else if ((i) % 2 == 0) {
+        } else if ((i) % 2 == 0) {
             linhasTabela[i].className = "styleOne";
-        }
-        else {
+        } else {
             linhasTabela[i].className = "styleTwo";
         }
     }
 }
 
 function criarElemento(obj) {
+    const existingRow = document.getElementById(obj.nome.trim());
 
-    // Create two new cells
-    var cellTextoNome = document.createElement("td");
-    cellTextoNome.id = obj.id;
-    cellTextoNome.innerHTML = obj.nome;
-    cellTextoNome.style = 'text-align: center;';
-    // Create two new cells
-    var cellTextoTotal = document.createElement("td");
-    cellTextoTotal.id = obj.id;
-    cellTextoTotal.innerHTML = obj.total;
-    cellTextoTotal.style = 'text-align: center;';
+    if (existingRow) {
+        existingRow.children[1].innerText = obj.vitorias;
+        existingRow.children[2].innerText = obj.empates;
+        existingRow.children[3].innerText = obj.derrotas;
+    } else {
+        var cellTextoNome = document.createElement("td");
+        cellTextoNome.id = obj.nome.trim();
+        cellTextoNome.innerHTML = obj.nome.trim();
+        cellTextoNome.style = 'text-align: center;';
 
-    var row = document.createElement("tr");
-    row.id = obj.id;
-    row.appendChild(cellTextoNome);
-    row.appendChild(cellTextoTotal);
-    const table = document.getElementById("tableGameWinners");
-    table.appendChild(row);// Adiciona a linha na tabela
+        var cellTextoVitorias = document.createElement("td");
+        cellTextoVitorias.innerHTML = obj.vitorias;
+        cellTextoVitorias.style = 'text-align: center;';
+
+        var cellTextoEmpates = document.createElement("td");
+        cellTextoEmpates.innerHTML = obj.empates;
+        cellTextoEmpates.style = 'text-align: center;';
+
+        var cellTextoDerrotas = document.createElement("td");
+        cellTextoDerrotas.innerHTML = obj.derrotas;
+        cellTextoDerrotas.style = 'text-align: center;';
+
+        var row = document.createElement("tr");
+        row.id = obj.nome.trim();
+        row.appendChild(cellTextoNome);
+        row.appendChild(cellTextoVitorias);
+        row.appendChild(cellTextoEmpates);
+        row.appendChild(cellTextoDerrotas);
+
+        const table = document.getElementById("tableGameWinners");
+        table.appendChild(row);
+    }
 }
 
-
 const JogoVelha = () => {
-
     let inforPlay = new InforPlay(0, false, false, null, []);
 
     const mensagens = [
@@ -115,7 +137,7 @@ const JogoVelha = () => {
         'Agora é sua vez',
         'Venceu o jogo',
         'Jogo empatado'
-    ]
+    ];
 
     const self = new Self(true, '', mensagens[0], 'Jogar', null, []);
 
@@ -123,7 +145,27 @@ const JogoVelha = () => {
         if (inforPlay.jogadas[val1] === inforPlay.jogadas[val2] && inforPlay.jogadas[val2] === inforPlay.jogadas[val3]) {
             return inforPlay.jogadas[val1];
         }
-    }
+    };
+
+    const updateRanking = (playerName, result) => {
+        let rankingPlayer = gameWinnersList.find(o => o.nome.trim() === playerName.trim());
+
+        if (!rankingPlayer) {
+            rankingPlayer = new RankingPlayer(playerName.trim());
+            gameWinnersList.push(rankingPlayer);
+        }
+
+        if (result === 'win') {
+            rankingPlayer.vitorias++;
+        } else if (result === 'draw') {
+            rankingPlayer.empates++;
+        } else if (result === 'loss') {
+            rankingPlayer.derrotas++;
+        }
+
+        localStorage.setItem('gameWinnersList', JSON.stringify(gameWinnersList));
+        criaTable();
+    };
 
     const clickedBox = (elemento) => {
         let winner = false;
@@ -131,14 +173,12 @@ const JogoVelha = () => {
         if (elemento) {
             inforPlay.total++;
             const id = elemento.getAttribute('data-id');
-            if (!inforPlay.podeJogar || inforPlay.jogadas[id]) {// Verifica se o jogador pode jogar ou se a celular já foi preenchida
+            if (!inforPlay.podeJogar || inforPlay.jogadas[id]) {
                 return false;
             }
             elemento.innerText = self.simbolo;
             inforPlay.jogadas[id] = self.simbolo;
 
-
-            // Verifica todas as opções do jogador ganhar a partida
             winner = (checkMatching(1, 2, 3) || checkMatching(4, 5, 6) || checkMatching(7, 8, 9) ||
                 checkMatching(1, 4, 7) || checkMatching(2, 5, 8) || checkMatching(3, 6, 9) ||
                 checkMatching(1, 5, 9) || checkMatching(3, 5, 7));
@@ -150,42 +190,19 @@ const JogoVelha = () => {
                 self.texto = mensagens[2];
                 inforPlay.podeJogar = false;
                 const mensagem = document.getElementById('mensagem');
-                mensagem.className = "efeitoVenceu"; // Aplica o efeito da mensagem piscando
+                mensagem.className = "efeitoVenceu";
 
-
-                let winningPlayer = gameWinnersList.find(o => o.nome.trim() === self.nomeJogadorAtual.trim());
-                const index = gameWinnersList.length;
-
-                let removeValFromIndex = [];
-
-                for (var i = 0; i < gameWinnersList.length; i++) {
-                    if (gameWinnersList[i].nome == self.nomeJogadorAtual) {
-                        removeValFromIndex.push(i);
-                    }
-                }
-
-                for (var i = removeValFromIndex.length - 1; i >= 0; i--)
-                    gameWinnersList.splice(removeValFromIndex[i], 1);
-
-                if (winningPlayer === null || winningPlayer === undefined) {
-                    const winningPlayer = new WinningPlayer(index, self.nomeJogadorAtual, 1);
-                    gameWinnersList.push(winningPlayer);
-                } else {
-                    winningPlayer.total = winningPlayer.total + 1;
-                    gameWinnersList.push(winningPlayer);
-                }
-                localStorage.setItem('gameWinnersList', JSON.stringify(gameWinnersList));
-                criaTable();
-
+                updateRanking(self.nomeJogadorAtual.trim(), 'win');
+                updateRanking(self.jogadores.find(player => player.simbolo !== self.simbolo).nome.trim(), 'loss');
             } else {
                 if (self.simbolo === 'x') {
                     self.simbolo = 'o';
                     let playCurrent = self.jogadores.find(o => o.simbolo.trim() === self.simbolo.trim());
-                    self.nomeJogadorAtual = playCurrent.nome + ' - ';
+                    self.nomeJogadorAtual = playCurrent.nome.trim();
                 } else {
                     self.simbolo = 'x';
                     let playCurrent = self.jogadores.find(o => o.simbolo.trim() === self.simbolo.trim());
-                    self.nomeJogadorAtual = playCurrent.nome + ' - ';
+                    self.nomeJogadorAtual = playCurrent.nome.trim();
                 }
             }
         }
@@ -196,11 +213,13 @@ const JogoVelha = () => {
             self.texto = mensagens[3];
             self.simbolo = '';
             mensagem.className = "efeitoVenceu";
+            updateRanking(self.jogadores[0].nome.trim(), 'draw');
+            updateRanking(self.jogadores[1].nome.trim(), 'draw');
             return false;
         }
 
         return true;
-    }
+    };
 
     self.init = (elemento) => {
         inforPlay.quadro = elemento;
@@ -208,10 +227,10 @@ const JogoVelha = () => {
             switch (e.target.tagName) {
                 case 'SPAN':
                     if (clickedBox(e.target)) {
-                        if (self.robo && !inforPlay.venceu) {
+                        if (self.robo && self.simbolo === 'o' && inforPlay.podeJogar) {
+                            const emptyTitles = Array.from(elemento.querySelectorAll('span')).filter((e) => !e.innerText);
                             elemento.style.pointerEvents = 'none';
                             setTimeout(() => {
-                                const emptyTitles = elemento.querySelectorAll('span:empty');
                                 const cell = emptyTitles[Math.floor(Math.random() * emptyTitles.length)];
                                 clickedBox(cell);
                                 elemento.style.pointerEvents = '';
@@ -222,17 +241,15 @@ const JogoVelha = () => {
                 case 'BUTTON':
                     play();
                     break;
-            };
+            }
         });
-    }
+    };
 
     const play = () => {
-
-        // Ajustando a inicialização do jogador 1 com o valor do campo "jog1"
         let jogador1Nome = document.getElementById('jog1').value;
         let jogador2Nome = document.getElementById('jog2').value;
-        let jogador1 = new Player(jogador1Nome, 'x');
-        let jogador2 = new Player(self.robo ? 'Máquina' : jogador2Nome, 'o');
+        let jogador1 = new Player(jogador1Nome.trim(), 'x');
+        let jogador2 = new Player(self.robo ? 'Máquina' : jogador2Nome.trim(), 'o');
         self.jogadores[0] = jogador1;
         self.jogadores[1] = jogador2;
 
@@ -240,26 +257,22 @@ const JogoVelha = () => {
         inforPlay.podeJogar = true;
         inforPlay.venceu = false;
         self.simbolo = jogador1.simbolo;
-        self.nomeJogadorAtual = jogador1.nome + ' - ';
+        self.nomeJogadorAtual = jogador1.nome.trim();
         self.texto = mensagens[1];
         inforPlay.jogadas = [];
         const cells = inforPlay.quadro.querySelectorAll('span');
-        
-        // Aqui ele constroi os símbolos de cada quadradinho
+
         for (let i = 0; i < cells.length; i++) {
             cells[i].innerText = '';
         }
         const mensagem = document.getElementById('mensagem');
         mensagem.className = 'none';
         self.bottonLabel = 'Reiniciar';
-    }
-
+    };
     const template = `
     <div>
         <h1>Jogo da velha</h1>
-        <p class="checkbox">
-            Jogar contra a máquina <input type="checkbox" checked @bind="self.robo">
-        </p>
+    
         <div>
             <div class="gui">
                 <span id="mensagem">{{self.nomeJogadorAtual}} {{self.texto}}</span>
@@ -284,10 +297,7 @@ const JogoVelha = () => {
             </div>
         </div>
     </div>
-`;
-
-return lemonade.element(template, self);
-
+    `;
 
     return lemonade.element(template, self);
-}
+};
