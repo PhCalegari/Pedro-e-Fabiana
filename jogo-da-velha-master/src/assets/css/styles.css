@@ -2,7 +2,8 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    background: radial-gradient(ellipse at center, #b5bdc8 0%,#828c95 36%,#28343b 100%);
+    background: #ffffff;
+    font-family: 'montserrat';
 }
 
 h1{
@@ -20,7 +21,26 @@ h1{
   background-color: #28343b;
   float: right;
 }
-
+#jog2{
+  color: white;
+}
+#btnZerarLocalStorage{
+  margin-left:37%;
+  margin-top: 1%;
+  height: 40px;
+  width: auto;
+  color: white ;
+  background: linear-gradient(to bottom, rgba(69,72,77,1) 0%,rgba(0,0,0,1) 100%);
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+#btnZerarLocalStorage:hover {
+  background: linear-gradient(to bottom, rgb(101, 96, 96) 0%, rgba(0, 0, 0, 1) 100%);
+}
 .gui {
     margin-top: 10px;
     margin-bottom: 10px;
@@ -44,45 +64,44 @@ h1{
 .board__cell {
     position: relative;
     /* background-color: #6c6c6c; */
-    background: linear-gradient(to bottom, rgba(69,72,77,1) 0%,rgba(0,0,0,1) 100%);
-    color: #fff;
+    background: linear-gradient(to bottom, rgb(255, 255, 255) 0%,rgb(255, 255, 255) 100%);
+    color: #0F1035;
     height: 90px;
     width: 90px;
     margin: 2px;
+    box-shadow: inset 0 0 10px 1px rgb(0, 0, 0);
     font-size: 40px;
     line-height: 80px;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 1px;
 }
-
 .btn {
-    /* background-color: #6c6c6c; */
-    background: linear-gradient(to bottom, rgba(69,72,77,1) 0%,rgba(0,0,0,1) 100%);
-    color: #fff;
-    font-size: 20px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    line-height: 60px;
-    text-align: center;
-    border-radius: 25px;
-    margin-left: 1px;
-    margin-bottom: 2px;
-    margin-top: 5px;
-    width: 99%;
+  background: linear-gradient(to bottom, rgba(69, 72, 77, 1) 0%, rgba(0, 0, 0, 1) 100%);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  line-height: 60px;
+  text-align: center;
+  border-radius: 25px;
+  margin-left: 1px;
+  margin-bottom: 2px;
+  margin-top: 5px;
+  width: 99%;
+  transition: background-color 0.3s ease;
 }
 
+.btn:hover {
+  background: linear-gradient(to bottom, rgb(101, 96, 96) 0%, rgba(0, 0, 0, 1) 100%);
+}
+.div_jogadores{
+  color: white;
+}
 /* Gradiente com mais nuances */
 .wood-gradient {
     border-radius: 25px;
-    background: linear-gradient(135deg, 
-        #8B4513 0%,   /* SaddleBrown */
-        #A0522D 20%,  /* Sienna */
-        #CD853F 40%,  /* Peru */
-        #D2691E 60%,  /* Chocolate */
-        #F4A460 80%,  /* SandyBrown */
-        #DEB887 100%  /* BurlyWood */
-    );
+    background: #0F1035;
 }
 
  .efeitoVenceu {
@@ -116,19 +135,21 @@ h1{
     transform: translateY(-15px);
   }
 }
-
+#jog1{
+  box-shadow: inset 0 0 2px 1px rgb(58, 55, 55);
+border-radius: 5px;
+border:none;
+}
+#jog2{
+  box-shadow: inset 0 0 2px 1px rgb(58, 55, 55);
+  border-radius: 5px;
+  border:none;
+}
 .div_table {
   border-radius: 10px;
   margin-top: 10px;
   margin-left: 5px;
-  background: linear-gradient(135deg, 
-        #8B4513 0%,   /* SaddleBrown */
-        #A0522D 20%,  /* Sienna */
-        #CD853F 40%,  /* Peru */
-        #D2691E 60%,  /* Chocolate */
-        #F4A460 80%,  /* SandyBrown */
-        #DEB887 100%  /* BurlyWood */
-    );
+  background: #0F1035;
 }
 
 .div_jogadores {
@@ -136,14 +157,7 @@ h1{
   margin-right: 10px;
   width: 400px;
   text-align: center;
-  background: linear-gradient(135deg, 
-      #8B4513 0%,   /* SaddleBrown */
-      #A0522D 20%,  /* Sienna */
-      #CD853F 40%,  /* Peru */
-      #D2691E 60%,  /* Chocolate */
-      #F4A460 80%,  /* SandyBrown */
-      #DEB887 100%  /* BurlyWood */
-    );
+  background: #0F1035;
 }
 
 .styleOne {
