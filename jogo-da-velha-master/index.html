@@ -5,6 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./src/assets/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <title>Jogo da Velha</title>
 </head>
 <body>
@@ -15,7 +18,7 @@
     <label for="jog2" id="labelJogador2">Jogador 2:</label>
     <input type="text" id="jog2" name="jogador2"><br><br>
     <p class="checkbox">
-        Jogar contra a máquina <input type="checkbox" id="checkboxRobo">
+        Jogar contra a máquina <input type="checkbox" id="checkboxRobo" checked @bind="self.robo">
     </p>
 </div>
 
@@ -24,11 +27,23 @@
 <div class="div_table">
     <fieldset>
         <legend style="color: white; font-weight: bolder;">Tabela de Rankings</legend>
-        <table id="tableGameWinners" style="width: 100%;"></table>
+        <table id="tableGameWinners" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Jogador</th>
+                    <th>Vitórias</th>
+                    <th>Empates</th>
+                    <th>Derrotas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dados serão inseridos dinamicamente -->
+            </tbody>
+        </table>
     </fieldset>
 
     <!-- Botão para zerar o Local Storage -->
-    <button id="btnZerarLocalStorage">Zerar Local Storage</button>
+    <button id="btnZerarLocalStorage" onclick="zerarLocalStorage()">Apagar ranking</button>
 </div>
 
 <script>
@@ -40,24 +55,75 @@
 
         if (checkboxRobo.checked) {
             jogador2Nome.disabled = true; // Desabilita o input quando jogando contra a máquina
-            jogador2Nome.value = ''; // Limpa o valor do input
-            labelJogador2.style.display = 'none'; // Oculta a label "Jogador 2:"
+            jogador2Nome.value = 'Máquina'; // Altera o valor do input para "Máquina"
+            labelJogador2.textContent = 'Jogador 2:'; // Altera o texto da label para "Jogador 2 (Máquina):"
         } else {
             jogador2Nome.disabled = false; // Habilita o input quando jogando com outro jogador
-            labelJogador2.style.display = 'inline'; // Exibe a label "Jogador 2:"
+            jogador2Nome.value = ''; // Limpa o valor do input
+            labelJogador2.textContent = 'Jogador 2:'; // Restaura o texto original da label
         }
     }
 
     // Função para zerar o Local Storage
     function zerarLocalStorage() {
-        localStorage.clear
-        // Após remover, podemos recriar a tabela vazia
+        localStorage.clear();
+        criaTable();
+    }
+    function zerarLocalStorage() {
+        localStorage.clear();
+        window.location.reload(true);
+    }
+
+    // Função para criar a tabela de rankings
+    function criaTable() {
+        const tableGameWinners = document.getElementById('tableGameWinners').getElementsByTagName('tbody')[0];
+        tableGameWinners.innerHTML = '';
+
+        // Recupera os dados do Local Storage
+        const rankingData = JSON.parse(localStorage.getItem('ranking')) || {};
+
+        for (const [player, stats] of Object.entries(rankingData)) {
+            const row = tableGameWinners.insertRow();
+            row.insertCell(0).innerText = player;
+            row.insertCell(1).innerText = stats.wins || 0;
+            row.insertCell(2).innerText = stats.draws || 0;
+            row.insertCell(3).innerText = stats.losses || 0;
+        }
+    }
+
+    // Função para atualizar o ranking
+    function atualizarRanking(winner, isDraw = false) {
+        const rankingData = JSON.parse(localStorage.getItem('ranking')) || {};
+
+        if (isDraw) {
+            for (const player of Object.keys(rankingData)) {
+                if (!rankingData[player].draws) {
+                    rankingData[player].draws = 0;
+                }
+                rankingData[player].draws += 1;
+            }
+        } else {
+            if (!rankingData[winner]) {
+                rankingData[winner] = { wins: 0, draws: 0, losses: 0 };
+            }
+            rankingData[winner].wins += 1;
+
+            const loser = winner === document.getElementById('jog1').value ? document.getElementById('jog2').value : document.getElementById('jog1').value;
+            if (!rankingData[loser]) {
+                rankingData[loser] = { wins: 0, draws: 0, losses: 0 };
+            }
+            rankingData[loser].losses += 1;
+        }
+
+        localStorage.setItem('ranking', JSON.stringify(rankingData));
         criaTable();
     }
 
     // Executa a função inicialmente para configurar o estado correto do campo de jogador 2 ao carregar a página
     document.addEventListener('DOMContentLoaded', function () {
         atualizarCampoJogador2(); // Verifica o estado inicial do checkbox
+        criaTable(); // Cria a tabela de rankings ao carregar a página
+
         const checkboxRobo = document.getElementById('checkboxRobo');
         
         // Adiciona um evento de mudança ao checkbox para atualizar dinamicamente o estado do campo de jogador 2
